@@ -1,3 +1,4 @@
+import { uploadImage } from './../Azure/index';
 import { Response, Request } from 'express';
 import multer from 'multer';
 import path from 'path';
@@ -15,14 +16,17 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage }).single('file');
 
-export const azureBlob = async (req: Request, res: Response, destination: string, temp = false) => {
+export const azureBlob = async (req: Request, res: Response) => {
     return new Promise((resolve, reject) => {
-        upload(req, res, (err) => {
+        upload(req, res, async (err) => {
             if (err) {
                 reject(err)
             } else {
                 let { file, body } = req;
-                resolve({ file, body });
+                if (file) {
+                    await uploadImage(`${body.patientId}/${body.visitId}/${file.originalname}`, file.path)
+                    resolve({ file: `${body.patientId}/${body.visitId}/${file.originalname}`, path: file.path,  body });
+                }
             }
         })
     })
