@@ -4,6 +4,8 @@ import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import controller from './src/infra/Controller';
 import database from './config/database';
+import fs from 'fs';
+import https from 'https';
 
 const app: express.Application = express();
 
@@ -29,8 +31,19 @@ router.use(`/api/v1`, apiRouter)
 app.use(router)
 
 const port = process.env.port || '3000';
+app.set('port', port);
 
-app.listen(port, () => {
+const options = {
+    key: fs.readFileSync('/etc/letsencrypt/live/testing.visilant.org/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/testing.visilant.org/fullchain.pem')
+};
+
+https.createServer(options, app).listen(port, () => {
     connectDatabase(database)
     console.log(`Express running on port ${port}`);
-})
+});
+
+// app.listen(port, () => {
+//     connectDatabase(database)
+//     console.log(`Express running on port ${port}`);
+// })

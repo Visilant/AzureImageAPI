@@ -24,8 +24,8 @@ export const azureBlob = async (req: Request, res: Response) => {
             } else {
                 let { file, body } = req;
                 if (file) {
-                    await uploadImage(`${body.patientId}/${body.visitId}/${file.originalname}`, file.path)
-                    resolve({ file: `${body.patientId}/${body.visitId}/${file.originalname}`, path: file.path,  body });
+                    await uploadImage(`${body.patientId.trim()}/${body.visitId.trim()}/${file.originalname}`, file.path)
+                    resolve({ file: `${body.patientId.trim()}/${body.visitId.trim()}/${file.originalname}`, path: file.path,  body });
                 }
             }
         })
