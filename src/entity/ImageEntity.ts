@@ -25,6 +25,21 @@ export class ImageEntity extends BaseEntity {
     @Column()
     image_path: string = '';
 
+    @Column({ nullable: true})
+    visual_acuity: string = '';
+
+    @Column({ nullable: true})
+    pinhole_acuity: string = '';
+
+    @Column({ nullable: true})
+    complaints: string = '';
+
+    @Column({ nullable: true})
+    age: string = '';
+
+    @Column({ nullable: true})
+    sex: string = '';
+
     @Column()
     created_by: string = '';
 
