@@ -31,10 +31,11 @@ export = () => {
         if (storeImage && storeImage.body && storeImage.file) {
             let { visitId, patientId, creatorId } = storeImage.body;
             let data = {
+                ...storeImage.body,
                 visit_id: visitId.trim(),
                 patient_id: patientId.trim(),
                 image_path: `https://${process.env.AZURE_CONTAINER}.blob.core.windows.net/${process.env.CONTAINER_NAME}/${storeImage.file}`,
-                created_by: creatorId.trim(),
+                created_by: creatorId.trim()
             }
             try {
                 await getConnection().getRepository(ImageEntity).save(data);
