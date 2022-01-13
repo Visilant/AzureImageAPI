@@ -27,7 +27,9 @@ const router = Router();
 const apiRouter = Router();
 
 apiRouter.use('/image', controller('image'))
+apiRouter.use('/diagnosis', controller('diagnosis'))
 router.use(`/api/v1`, apiRouter)
+
 app.use(router)
 
 const port = process.env.port || '3000';

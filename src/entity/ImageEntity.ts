@@ -1,4 +1,5 @@
-import { Entity, BaseEntity, Column, PrimaryGeneratedColumn, CreateDateColumn } from 'typeorm';
+import { Entity, BaseEntity, Column, PrimaryGeneratedColumn, CreateDateColumn, JoinColumn, ManyToOne } from 'typeorm';
+import { DiagnosisEntity } from './DiagnosisEntity';
 
 export enum ImageType {
     RIGHT = "right",
@@ -13,6 +14,7 @@ export enum Quality {
 }
 @Entity('image')
 export class ImageEntity extends BaseEntity {
+
     @PrimaryGeneratedColumn('uuid')
     id: string = '';
 
@@ -22,22 +24,32 @@ export class ImageEntity extends BaseEntity {
     @Column()
     patient_id: string = '';
 
+    @Column({ nullable: true })
+    diagnosis_id: string = '';
+
+    @ManyToOne(
+        () => DiagnosisEntity,
+        (diagnosis: DiagnosisEntity) => diagnosis.images, { onDelete: 'CASCADE' }
+    )
+    @JoinColumn({ name: 'diagnosis_id' })
+    diagnosis!: DiagnosisEntity;
+
     @Column()
     image_path: string = '';
 
-    @Column({ nullable: true})
+    @Column({ nullable: true })
     visual_acuity: string = '';
 
-    @Column({ nullable: true})
+    @Column({ nullable: true })
     pinhole_acuity: string = '';
 
-    @Column({ nullable: true})
+    @Column({ nullable: true })
     complaints: string = '';
 
-    @Column({ nullable: true})
+    @Column({ nullable: true })
     age: string = '';
 
-    @Column({ nullable: true})
+    @Column({ nullable: true })
     sex: string = '';
 
     @Column()
