@@ -1,3 +1,4 @@
+import { CustomQuery } from './../../../infra/customQuery';
 import { UserEntity } from './../../../entity/UserEntity';
 import { Router } from "express";
 import bcrypt from 'bcrypt';
@@ -39,7 +40,8 @@ export = () => {
     
     router.get('/', async (req, res) => {
         try {
-            let allUsers = await UserEntity.find();
+            let query = CustomQuery(req.query);
+            let allUsers = await UserEntity.find(query);
             res.status(200).json({ data: allUsers })
         } catch (err) {
             res.status(400).json({ message: 'Something failed', error: err })

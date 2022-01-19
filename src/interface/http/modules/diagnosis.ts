@@ -1,13 +1,15 @@
 import { DiagnosisEntity } from './../../../entity/DiagnosisEntity';
 import { Router } from "express";
 import auth from '../middleware/auth';
+import { CustomQuery } from '../../../infra/customQuery';
 
 export = () => {
     const router = Router();
 
     router.get('/', async (req, res) => {
         try {
-            let allDiagnosis = await DiagnosisEntity.find();
+            let query = CustomQuery(req.query);
+            let allDiagnosis = await DiagnosisEntity.find(query);
             res.status(200).json({ data: allDiagnosis })
         } catch (err) {
             res.status(400).json({ message: 'Something failed', error: err })

@@ -3,13 +3,15 @@ import { Router } from 'express';
 import { azureBlob } from '../../../infra/Multer';
 import fs from 'fs';
 import auth from '../middleware/auth';
+import { CustomQuery } from '../../../infra/customQuery';
 
 export = () => {
     const router = Router();
 
     router.get('/', async (req, res) => {
         try {
-            let allImage = await ImageEntity.find();
+            let query = CustomQuery(req.query);
+            let allImage = await ImageEntity.find(query);
             res.status(200).json({ data: allImage })
         } catch (err) {
             res.status(400).json({ message: 'Something failed', error: err })
