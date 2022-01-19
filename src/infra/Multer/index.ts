@@ -5,7 +5,6 @@ import path from 'path';
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        console.log(`${__dirname}/../../../upload`)
         cb(null, `${__dirname}/../../../upload`)
     },
     filename: (req, file, cb) => {

@@ -1,14 +1,14 @@
 import { DiagnosisEntity } from './../../../entity/DiagnosisEntity';
 import { Router } from "express";
-import { getConnection } from 'typeorm';
+import auth from '../middleware/auth';
 
 export = () => {
     const router = Router();
 
     router.get('/', async (req, res) => {
         try {
-            let allImage = await getConnection().getRepository(DiagnosisEntity).find();
-            res.status(200).json({ data: allImage })
+            let allDiagnosis = await DiagnosisEntity.find();
+            res.status(200).json({ data: allDiagnosis })
         } catch (err) {
             res.status(400).json({ message: 'Something failed', error: err })
         }
@@ -17,8 +17,8 @@ export = () => {
     router.post('/', async (req, res) => {
         if (req.body) {
             try {
-                await getConnection().getRepository(DiagnosisEntity).save({...req.body});
-                res.status(200).json({ message: 'Created' })
+                let diagnosis = await DiagnosisEntity.save({...req.body});
+                res.status(200).json({ message: 'Created', diagnosis })
             } catch (err) {
                 res.status(400).json({ message: 'Failed', error: err })
             }
@@ -27,12 +27,14 @@ export = () => {
         }
     })
 
+    router.use(auth().authenticate());
+
     router.put('/:id', async (req, res) => {
         let { ...arg } = req.body;
         let id = req.params.id;
         if (id) {
             try {
-                await getConnection().getRepository(DiagnosisEntity).update({ id }, arg);
+                await DiagnosisEntity.update({ id }, arg);
                 res.status(200).json({ message: 'Updated' })
             } catch (err) {
                 res.status(400).json({ err })
@@ -46,7 +48,7 @@ export = () => {
         let id = req.params.id;
         if (id) {
             try {
-                await getConnection().getRepository(DiagnosisEntity).delete(id);
+                await DiagnosisEntity.delete(id);
                 res.status(200).json({ message: 'Deleted' })
             } catch (err) {
                 res.status(400).json(err)

@@ -1,15 +1,15 @@
 import { ImageEntity } from './../../../entity/ImageEntity';
 import { Router } from 'express';
-import { getConnection } from 'typeorm';
 import { azureBlob } from '../../../infra/Multer';
 import fs from 'fs';
+import auth from '../middleware/auth';
 
 export = () => {
-    const router = Router()
+    const router = Router();
 
     router.get('/', async (req, res) => {
         try {
-            let allImage = await getConnection().getRepository(ImageEntity).find();
+            let allImage = await ImageEntity.find();
             res.status(200).json({ data: allImage })
         } catch (err) {
             res.status(400).json({ message: 'Something failed', error: err })
@@ -19,7 +19,7 @@ export = () => {
     router.get('/:patientId/:visitID', async (req, res) => {
         let { patientId, visitID } = req.params;
         try {
-            let allImage = await getConnection().getRepository(ImageEntity).find({ where: { patient_id: patientId, visit_id: visitID } });
+            let allImage = await ImageEntity.find({ where: { patient_id: patientId, visit_id: visitID } });
             res.status(200).json({ data: allImage })
         } catch (err) {
             res.status(400).json({ message: 'Something failed', error: err })
@@ -38,9 +38,9 @@ export = () => {
                 created_by: creatorId.trim()
             }
             try {
-                await getConnection().getRepository(ImageEntity).save(data);
+                let image = await ImageEntity.save(data);
                 fs.unlinkSync(storeImage.path);
-                res.status(200).json({ message: 'Created' })
+                res.status(200).json({ message: 'Created', image })
             } catch (err) {
                 res.status(400).json({ message: 'Failed', error: err })
             }
@@ -49,12 +49,14 @@ export = () => {
         }
     })
 
+    router.use(auth().authenticate());
+
     router.put('/:id', async (req, res) => {
         let { ...arg } = req.body;
         let id = req.params.id;
         if (id) {
             try {
-                await getConnection().getRepository(ImageEntity).update({ id }, arg);
+                await ImageEntity.update({ id }, arg);
                 res.status(200).json({ message: 'Updated' })
             } catch (err) {
                 res.status(400).json({ err })
@@ -68,7 +70,7 @@ export = () => {
         let id = req.params.id;
         if (id) {
             try {
-                await getConnection().getRepository(ImageEntity).delete(id);
+                await ImageEntity.delete(id);
                 res.status(200).json({ message: 'Deleted' })
             } catch (err) {
                 res.status(400).json(err)

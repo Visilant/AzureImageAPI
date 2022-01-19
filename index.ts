@@ -3,13 +3,15 @@ import express, { Request, Response, NextFunction, Router } from 'express';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 import controller from './src/infra/Controller';
-import database from './config/database';
+import config from './config';
 import fs from 'fs';
 import https from 'https';
+import auth from './src/interface/http/middleware/auth';
 
 const app: express.Application = express();
 
 app.disable('x-powered-by');
+app.use(auth().initialize());
 app.use(cookieParser())
 app.use((req: Request, res: Response, next: NextFunction) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -28,6 +30,7 @@ const apiRouter = Router();
 
 apiRouter.use('/image', controller('image'))
 apiRouter.use('/diagnosis', controller('diagnosis'))
+apiRouter.use('/user', controller('user'))
 router.use(`/api/v1`, apiRouter)
 
 app.use(router)
@@ -41,11 +44,11 @@ const options = {
 };
 
 https.createServer(options, app).listen(port, () => {
-    connectDatabase(database)
+    connectDatabase(config.db)
     console.log(`Express running on port ${port}`);
 });
 
 // app.listen(port, () => {
-//     connectDatabase(database)
+//     connectDatabase(config.db)
 //     console.log(`Express running on port ${port}`);
 // })
