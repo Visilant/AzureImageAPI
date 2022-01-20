@@ -11,7 +11,7 @@ export = () => {
     router.get('/', async (req, res) => {
         try {
             let query = CustomQuery(req.query);
-            let allImage = await ImageEntity.find(query);
+            let allImage = await ImageEntity.findAndCount(query).then(([rows, total]: [rows: ImageEntity[], total: number]) => { return { datas: rows, total } });
             res.status(200).json({ data: allImage })
         } catch (err) {
             res.status(400).json({ message: 'Something failed', error: err })

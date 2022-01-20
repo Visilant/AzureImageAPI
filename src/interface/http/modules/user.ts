@@ -37,11 +37,11 @@ export = () => {
     })
 
     router.use(auth().authenticate());
-    
+
     router.get('/', async (req, res) => {
         try {
             let query = CustomQuery(req.query);
-            let allUsers = await UserEntity.find(query);
+            let allUsers = await UserEntity.findAndCount(query).then(([rows, total]: [rows: UserEntity[], total: number]) => { return { datas: rows, total } });
             res.status(200).json({ data: allUsers })
         } catch (err) {
             res.status(400).json({ message: 'Something failed', error: err })
@@ -56,7 +56,7 @@ export = () => {
                     const hash = bcrypt.hashSync(req.body.password, salt);
                     req.body.password = hash;
                 }
-                let user = await UserEntity.save({...req.body});
+                let user = await UserEntity.save({ ...req.body });
                 res.status(200).json({ message: 'Created', user })
             } catch (err) {
                 res.status(400).json({ message: 'Failed', error: err })

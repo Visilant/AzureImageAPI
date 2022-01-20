@@ -9,7 +9,7 @@ export = () => {
     router.get('/', async (req, res) => {
         try {
             let query = CustomQuery(req.query);
-            let allDiagnosis = await DiagnosisEntity.find(query);
+            let allDiagnosis = await DiagnosisEntity.findAndCount(query).then(([rows, total]: [rows: DiagnosisEntity[], total: number]) => { return { datas: rows, total } });
             res.status(200).json({ data: allDiagnosis })
         } catch (err) {
             res.status(400).json({ message: 'Something failed', error: err })
@@ -19,7 +19,7 @@ export = () => {
     router.post('/', async (req, res) => {
         if (req.body) {
             try {
-                let diagnosis = await DiagnosisEntity.save({...req.body});
+                let diagnosis = await DiagnosisEntity.save({ ...req.body });
                 res.status(200).json({ message: 'Created', diagnosis })
             } catch (err) {
                 res.status(400).json({ message: 'Failed', error: err })
