@@ -6,3 +6,5 @@ tmp/
 temp/
 .env
 upload/*
+*.zip
+*.xlsx

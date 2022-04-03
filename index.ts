@@ -36,6 +36,7 @@ const apiRouter = Router();
 apiRouter.use('/image', controller('image'))
 apiRouter.use('/diagnosis', controller('diagnosis'))
 apiRouter.use('/user', controller('user'))
+apiRouter.use('/excel', controller('excel'))
 router.use(`/api/v1`, apiRouter)
 
 app.use(router)
