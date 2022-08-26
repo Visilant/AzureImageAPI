@@ -307,32 +307,32 @@ export = () => {
         }
         try {
             mysql.query(`select e.patient_id, 
-		JSON_ARRAYAGG(pe.uuid) as person_uuid,
-        JSON_ARRAYAGG(pe.gender) as gender,
-        JSON_ARRAYAGG(pe.birthdate) as dob,
-		JSON_ARRAYAGG(e.visit_id) as visits,
-        JSON_ARRAYAGG(e.encounter_type) as encounters_type_id,  
-        JSON_ARRAYAGG(e.encounter_id) as encounters, 
-        JSON_ARRAYAGG(encounter_datetime) as encounter_date, 
-        JSON_ARRAYAGG(o.concept_id) as concepts,
-        JSON_ARRAYAGG(o.value_text) as obs,
-        JSON_ARRAYAGG(o.creator) as creator,
-        JSON_ARRAYAGG(p.uuid) as uuid
-		from openmrs.visit as v
-        join openmrs.encounter as e on e.visit_id = v.visit_id
-        join openmrs.obs as o on o.encounter_id = e.encounter_id
-        join openmrs.users as u on u.user_id = o.creator
-        join openmrs.provider as p on p.person_id = u.person_id
-        join openmrs.person as pe on pe.person_id = u.person_id
-        where e.encounter_type IN (1, 9, 17, 18, 20, 21)
-        and v.date_created between ${from} and ${to}
-        and o.concept_id IN (165183, 165184, 165185, 165186, 
-            165214, 
-            165196, 165198, 165204, 165207, 
-            165197, 165199, 165205, 165206, 
-            165189, 165190, 165192, 165191, 165195, 165193, 165223, 165224)
-        and o.voided = 0
-        GROUP BY e.patient_id`, (err: any, results: any) => {
+            JSON_ARRAYAGG(pe.uuid) as person_uuid,
+            JSON_ARRAYAGG(pe.gender) as gender,
+            JSON_ARRAYAGG(pe.birthdate) as dob,
+            JSON_ARRAYAGG(e.visit_id) as visits,
+            JSON_ARRAYAGG(e.encounter_type) as encounters_type_id,  
+            JSON_ARRAYAGG(e.encounter_id) as encounters, 
+            JSON_ARRAYAGG(e.encounter_datetime) as encounter_date, 
+            JSON_ARRAYAGG(o.concept_id) as concepts,
+            JSON_ARRAYAGG(o.value_text) as obs,
+            JSON_ARRAYAGG(o.creator) as creator,
+            JSON_ARRAYAGG(pro.uuid) as uuid
+            from openmrs.visit as v
+            join openmrs.encounter as e on e.visit_id = v.visit_id
+            join openmrs.obs as o on o.encounter_id = e.encounter_id
+            join openmrs.users as u on u.user_id = e.creator
+            join openmrs.provider as pro on pro.person_id = u.person_id
+            join openmrs.person as pe on pe.person_id = v.patient_id
+            where e.encounter_type IN (1, 9, 17, 18, 20, 21)
+            and v.date_created between ${from} and ${to}
+            and o.concept_id IN (165183, 165184, 165185, 165186, 
+                165214, 
+                165196, 165198, 165204, 165207, 
+                165197, 165199, 165205, 165206, 
+                165189, 165190, 165192, 165191, 165195, 165193, 165223, 165224)
+            and o.voided = 0
+            GROUP BY e.patient_id`, (err: any, results: any) => {
                 if (err) console.log('Error', err)
                 if (results.length) {
                     let datas: any = [];
@@ -534,7 +534,7 @@ export = () => {
                             newData.push(data);
                         })
                         writeExcel(newData, 'review').then((response: any) => {
-                            res.status(200).json({ total: datas.length, filepath: `https://testing.visilant.org:3006/${response.filepath}` })
+                            res.status(200).json({ total: datas.length, filepath: `${process.env.SERVER_DOMAIN}:${process.env.PORT}/${response.filepath}` })
                         })
                     })
                 } else {
