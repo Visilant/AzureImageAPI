@@ -29,30 +29,45 @@ export = () => {
             [`matureCataractLeftEC${value}`]: 0,
             [`immatureCataractRightEC${value}`]: 0,
             [`immatureCataractLeftEC${value}`]: 0,
+            [`clearCrystallineLensRightEC${value}`]: 0,
+            [`clearCrystallineLensLeftEC${value}`]: 0,
+            [`PCIOLRightEC${value}`]: 0,
+            [`PCIOLLeftEC${value}`]: 0,
+            [`AphakiaRightEC${value}`]: 0,
+            [`AphakiaLeftEC${value}`]: 0,
+            [`refractiveErrorPresbyopiaRightEC${value}`]: 0,
+            [`refractiveErrorPresbyopiaLeftEC${value}`]: 0,
             [`pterygiumRightEC${value}`]: 0,
             [`pterygiumLeftEC${value}`]: 0,
-            [`conjunctivitisRightEC${value}`]: 0,
-            [`conjunctivitisLeftEC${value}`]: 0,
-            [`subconjunctivalhemorrhageRightEC${value}`]: 0,
-            [`subconjunctivalhemorrhageLeftEC${value}`]: 0,
-            [`cornealAbrasionRightEC${value}`]: 0,
-            [`cornealAbrasionLeftEC${value}`]: 0,
             [`inactiveCornealOpacityRightEC${value}`]: 0,
             [`inactiveCornealOpacityLeftEC${value}`]: 0,
             [`activeCornealInfectionRightEC${value}`]: 0,
             [`activeCornealInfectionLeftEC${value}`]: 0,
-            [`normalEyeExamRightEC${value}`]: 0,
-            [`normalEyeExamLeftEC${value}`]: 0,
-            [`refractiveErrorPresbyopiaRightEC${value}`]: 0,
-            [`refractiveErrorPresbyopiaLeftEC${value}`]: 0,
-            [`posteriorSegmentSuspectedRightEC${value}`]: 0,
-            [`posteriorSegmentSuspectedLeftEC${value}`]: 0,
-            [`pseudophakiaRightEC${value}`]: 0,
-            [`pseudophakiaLeftEC${value}`]: 0,
-            [`cannotBeAssessedRightEC${value}`]: 0,
-            [`cannotBeAssessedLeftEC${value}`]: 0,
+
+            // [`conjunctivitisRightEC${value}`]: 0,
+            // [`conjunctivitisLeftEC${value}`]: 0,
+            // [`subconjunctivalHemorrhageRightEC${value}`]: 0,
+            // [`subconjunctivalHemorrhageLeftEC${value}`]: 0,
+            // [`presbyopiaRightEC${value}`]: 0,
+            // [`presbyopiaLeftEC${value}`]: 0,
+            // [`posteriorSegmentScreeningRightEC${value}`]: 0,
+            // [`posteriorSegmentScreeningLeftEC${value}`]: 0,
+            // [`cannotBeAssessedRightEC${value}`]: 0,
+            // [`cannotBeAssessedLeftEC${value}`]: 0,
             OtherdiagnosisRight: '',
             OtherdiagnosisLeft: '',
+            
+            // [`cornealAbrasionRightEC${value}`]: 0,
+            // [`cornealAbrasionLeftEC${value}`]: 0,
+            
+            // [`normalEyeExamRightEC${value}`]: 0,
+            // [`normalEyeExamLeftEC${value}`]: 0,
+            
+            // [`posteriorSegmentSuspectedRightEC${value}`]: 0,
+            // [`posteriorSegmentSuspectedLeftEC${value}`]: 0,
+            // [`pseudophakiaRightEC${value}`]: 0,
+            // [`pseudophakiaLeftEC${value}`]: 0,
+            
 
 
             [`ReferralEC${value}`]: 0,
@@ -73,8 +88,8 @@ export = () => {
                 [`blurryVisionFarLeftEC${value}`]: 0,
                 [`rednessRightEC${value}`]: 0,
                 [`rednessLeftEC${value}`]: 0,
-                [`eyePainRightEC${value}`]: 0,
-                [`eyePainLeftEC${value}`]: 0,
+                [`eyePainOrIrritationRightEC${value}`]: 0,
+                [`eyePainOrIrritationLeftEC${value}`]: 0,
                 [`headacheRightEC${value}`]: 0,
                 [`headacheLeftEC${value}`]: 0,
                 [`eyeTraumaRightEC${value}`]: 0,
@@ -96,12 +111,13 @@ export = () => {
             rednessRightNurse: 0,
             rednessLeftNurse: 0,
             eyePainRightNurse: 0,
+            eyePainLeftNurse: 0,
             headacheRightNurse: 0,
             headacheLeftNurse: 0,
             eyeTraumaRightNurse: 0,
             eyeTraumaLeftNurse: 0,
-            pcIOLRightNurse: 0,
-            pcIOLLeftNurse: 0,
+            // pcIOLRightNurse: 0,
+            // pcIOLLeftNurse: 0,
             otherComplaintRight: '',
             otherComplaintLeft: '',
             volunteerVARight: '',
@@ -118,11 +134,11 @@ export = () => {
         return new Promise((resolve) => {
             let doctorReview = getDiagnosis(type), eyecamp = '';
             encounter.obs.forEach((ob: any) => {
-                if ([165204, 165207, 165205, 165206].includes(ob.concept_id)) {
+                if ([165204, 165207, 165205, 165206, 165227, 165228].includes(ob.concept_id)) {
                     var firstWord = ob.obs_value.split(' ')[0].toLowerCase() + (ob.obs_value.split(' ')[1]?.toLowerCase() || '');
                     let key = Object.keys(doctorReview);
                     let p1 = new RegExp(`^${firstWord}`);
-                    if ([165204, 165205].includes(ob.concept_id)) {
+                    if ([165204, 165205, 165227, 165228].includes(ob.concept_id)) {
                         let lefteye = key.filter(ab => ab.toLowerCase().match('left') && p1.test(ab.toLowerCase()));
                         if (lefteye.length) {
                             doctorReview[lefteye[0]] = 1;
@@ -147,7 +163,7 @@ export = () => {
                     const time = ob.obs_value.split('in ')[1];
                     doctorReview[`ReferralTimingEC${type}`] = time;
                 } else if (ob.concept_id === 165214) {
-                    let { acuity, pinhole, complaint, diagnosis, referral, ophthalmologist } = JSON.parse(ob.obs_value)
+                    let { acuity, pinhole, complaint, diagnosis, lens, referral, ophthalmologist } = JSON.parse(ob.obs_value)
                     if (acuity) {
                         doctorReview[`visualAcuityLeftEC${type}`] = acuity.left;
                         doctorReview[`visualAcuityRightEC${type}`] = acuity.right;
@@ -157,51 +173,81 @@ export = () => {
                         doctorReview[`pinholeRightEC${type}`] = pinhole.right
                     }
                     if (complaint) {
-                        if (complaint.left !== '') {
-                            var firstWord = complaint.left.split(' ')[0].toLowerCase() + (complaint.left.split(' ')[1]?.toLowerCase() || '') + (complaint.left.split(' ')[2]?.toLowerCase() || '');
-                            let key = Object.keys(doctorReview);
-                            let p1 = new RegExp(`^${firstWord}`);
-                            let lefteye = key.filter(ab => ab.toLowerCase().match('left') && p1.test(ab.toLowerCase()));
-                            if (lefteye.length) {
-                                doctorReview[lefteye[0]] = 1;
-                            } else {
-                                doctorReview['otherComplaintLeft'] = complaint.left;
-                            }
+                        if (typeof complaint.left === 'object' && complaint.left.length) {
+                            complaint.left.forEach((com: string) => {
+                                var firstWord = com.split(' ')[0].toLowerCase() + (com.split(' ')[1]?.toLowerCase() || '') + (com.split(' ')[2]?.toLowerCase() || '');
+                                let key = Object.keys(doctorReview);
+                                let p1 = new RegExp(`^${firstWord}`);
+                                let lefteye = key.filter(ab => ab.toLowerCase().match('left') && p1.test(ab.toLowerCase()));
+                                if (lefteye.length) {
+                                    doctorReview[lefteye[0]] = 1;
+                                } else {
+                                    doctorReview['otherComplaintLeft'] = com;
+                                }
+                            })
+                            
                         }
-                        if (complaint.right !== '') {
-                            var firstWord = complaint.right.split(' ')[0].toLowerCase() + (complaint.right.split(' ')[1]?.toLowerCase() || '') + (complaint.right.split(' ')[2]?.toLowerCase() || '');
-                            let key = Object.keys(doctorReview);
-                            let p1 = new RegExp(`^${firstWord}`);
-                            let righteye = key.filter(ab => ab.toLowerCase().match('right') && p1.test(ab.toLowerCase()));
-                            if (righteye.length) {
-                                doctorReview[righteye[0]] = 1;
-                            } else {
-                                doctorReview['otherComplaintRight'] = complaint.right;
-                            }
+                        if (typeof complaint.right === 'object' && complaint.right.length) {
+                            complaint.right.forEach((com: string) => {
+                                var firstWord = com.split(' ')[0].toLowerCase() + (com.split(' ')[1]?.toLowerCase() || '') + (com.split(' ')[2]?.toLowerCase() || '');
+                                let key = Object.keys(doctorReview);
+                                let p1 = new RegExp(`^${firstWord}`);
+                                let righteye = key.filter(ab => ab.toLowerCase().match('right') && p1.test(ab.toLowerCase()));
+                                if (righteye.length) {
+                                    doctorReview[righteye[0]] = 1;
+                                } else {
+                                    doctorReview['otherComplaintRight'] = com;
+                                }
+                            })
                         }
                     }
                     if (diagnosis) {
-                        if (diagnosis.left !== '') {
-                            var firstWord = diagnosis.left.split(' ')[0].toLowerCase() + (diagnosis.left.replace('/', '').split(' ')[1]?.toLowerCase() || '');
+                        if (typeof diagnosis.left === 'object' && diagnosis.left.length) {
+                            diagnosis.left.forEach((dia: string) => {
+                                var firstWord = dia.split(' ')[0].toLowerCase() + (dia.replace('/', '').split(' ')[1]?.toLowerCase() || '');
+                                let key = Object.keys(doctorReview);
+                                let p1 = new RegExp(`^${firstWord}`);
+                                let lefteye = key.filter(ab => ab.toLowerCase().match('left') && p1.test(ab.toLowerCase()));
+                                if (lefteye.length) {
+                                    doctorReview[lefteye[0]] = 1;
+                                } else {
+                                    doctorReview['OtherdiagnosisLeft'] = dia;
+                                }
+                            })
+                            
+                        }
+                        if (typeof diagnosis.right === 'object' && diagnosis.right.length) {
+                            diagnosis.right.forEach((dia: string) => {
+                                var firstWord = dia.split(' ')[0].toLowerCase() + (dia.replace('/', '').split(' ')[1]?.toLowerCase() || '');
+                                let key = Object.keys(doctorReview);
+                                let p1 = new RegExp(`^${firstWord}`);
+                                let righteye = key.filter(ab => ab.toLowerCase().match('right') && p1.test(ab.toLowerCase()));
+                                if (righteye.length) {
+                                    doctorReview[righteye[0]] = 1;
+                                } else {
+                                    doctorReview['OtherdiagnosisRight'] = dia;
+                                }
+                            })
+                        }
+                    }
+                    if (lens) {
+                        if (lens.left !== '') {
+                            var firstWord = lens.left.split(' ')[0].toLowerCase() + (lens.left.replace('/', '').split(' ')[1]?.toLowerCase() || '');
                             let key = Object.keys(doctorReview);
                             let p1 = new RegExp(`^${firstWord}`);
                             let lefteye = key.filter(ab => ab.toLowerCase().match('left') && p1.test(ab.toLowerCase()));
                             if (lefteye.length) {
                                 doctorReview[lefteye[0]] = 1;
-                            } else {
-                                doctorReview['OtherdiagnosisLeft'] = diagnosis.left;
                             }
                         }
-                        if (diagnosis.right !== '') {
-                            var firstWord = diagnosis.right.split(' ')[0].toLowerCase() + (diagnosis.right.replace('/', '').split(' ')[1]?.toLowerCase() || '');
+                        if (lens.right !== '') {
+                            var firstWord = lens.right.split(' ')[0].toLowerCase() + (lens.right.replace('/', '').split(' ')[1]?.toLowerCase() || '');
                             let key = Object.keys(doctorReview);
                             let p1 = new RegExp(`^${firstWord}`);
                             let righteye = key.filter(ab => ab.toLowerCase().match('right') && p1.test(ab.toLowerCase()));
                             if (righteye.length) {
                                 doctorReview[righteye[0]] = 1;
-                            } else {
-                                doctorReview['OtherdiagnosisRight'] = diagnosis.right;
-                            }
+                            } 
                         }
                     }
                     if (referral) {
@@ -210,7 +256,7 @@ export = () => {
                             const location = referral.value.split('to ')[1];
                             doctorReview[`ReferralLocationEC${type}`] = location;
                             if (referral.time !== '') {
-                                const time = referral.time.split('in ')[1];
+                                const time = referral.time;
                                 doctorReview[`ReferralTimingEC${type}`] = time;
                             }
                         }
@@ -273,20 +319,26 @@ export = () => {
      * @description All concept id are:
      * 165183 Referral
      * 165184 Referral Time
-     * 165185 Left Eye Diagnosis
-     * 165186 Right Eye Diagnosis
+     * 165185 Left Eye Lens Diagnosis
+     * 165186 Right Eye Lens Diagnosis
+     * 165226 Left Eye Pathology Diagnosis
+     * 165225 Right Eye Pathology Diagnosis
      * 
      * @description Review 1
      * 165196 Referral 
      * 165198 Referral Time
-     * 165204 Left Eye Diagnosis
-     * 165207 Right Eye Diagnosis
+     * 165204 Left Eye Diagnosis Lens Diagnosis
+     * 165207 Right Eye Diagnosis Lens Diagnosis
+     * 165227 Left Eye Pathology Diagnosis
+     * 165229 Right Eye Pathology Diagnosis
      * 
      * @description Review 2
      * 165197 Referral
      * 165199 Referral Time
-     * 165205 Left Eye Diagnosis
-     * 165206 Right Eye Diagnosis
+     * 165205 Left Eye Diagnosis Lens Diagnosis
+     * 165206 Right Eye Diagnosis Lens Diagnosis
+     * 165228 Left Eye Pathology Diagnosis
+     * 165230 Right Eye Pathology Diagnosis
      * 
      * @description Complaint
      * 165189 VA right
@@ -326,11 +378,13 @@ export = () => {
             join openmrs.person as pe on pe.person_id = v.patient_id
             where e.encounter_type IN (1, 9, 17, 18, 20, 21)
             and v.date_created between ${from} and ${to}
-            and o.concept_id IN (165183, 165184, 165185, 165186, 
+            and o.concept_id IN (
+                165183, 165184, 165185, 165186, 165226, 165225,
                 165214, 
-                165196, 165198, 165204, 165207, 
-                165197, 165199, 165205, 165206, 
-                165189, 165190, 165192, 165191, 165195, 165193, 165223, 165224)
+                165196, 165198, 165204, 165207, 165227, 165229,
+                165197, 165199, 165205, 165206, 165228, 165230,
+                165189, 165190, 165192, 165191, 165195, 165193, 165223, 165224
+                )
             and o.voided = 0
             GROUP BY e.patient_id`, (err: any, results: any) => {
                 if (err) console.log('Error', err)
