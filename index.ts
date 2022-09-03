@@ -41,20 +41,20 @@ router.use(`/api/v1`, apiRouter)
 
 app.use(router)
 
-const port = process.env.port || '3000';
+const port = process.env.PORT || '3000';
 app.set('port', port);
 
-const options = {
-    key: fs.readFileSync('/etc/letsencrypt/live/testing.visilant.org/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/testing.visilant.org/fullchain.pem')
-};
+// const options = {
+//     key: fs.readFileSync('/etc/letsencrypt/live/testing.visilant.org/privkey.pem'),
+//     cert: fs.readFileSync('/etc/letsencrypt/live/testing.visilant.org/fullchain.pem')
+// };
 
-https.createServer(options, app).listen(port, () => {
-    connectDatabase(config.db)
-    console.log(`Express running on port ${port}`);
-});
-
-// app.listen(port, () => {
+// https.createServer(options, app).listen(port, () => {
 //     connectDatabase(config.db)
 //     console.log(`Express running on port ${port}`);
-// })
+// });
+
+app.listen(port, () => {
+    connectDatabase(config.db)
+    console.log(`Express running on port ${port}`);
+})

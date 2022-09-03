@@ -51,8 +51,6 @@ export = () => {
         }
     })
 
-    router.use(auth().authenticate());
-
     router.put('/:id', async (req, res) => {
         let { ...arg } = req.body;
         let id = req.params.id;
@@ -67,6 +65,8 @@ export = () => {
             res.status(400).json({ message: 'id is required' })
         }
     })
+
+    router.use(auth().authenticate());
 
     router.delete('/:id', async (req, res) => {
         let id = req.params.id;
