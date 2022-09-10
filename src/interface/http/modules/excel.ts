@@ -1,12 +1,18 @@
-import { Router } from 'express';
+import e, { Router } from 'express';
 import { writeExcel } from '../../../infra/WriteExcel';
 import ConnectDatabase from '../../../infra/OpenMRS';
+import { ImageEntity } from '../../../entity/ImageEntity';
 
 export = () => {
     const router = Router();
 
     const mysql = ConnectDatabase();
 
+    /**
+     * Function to get age from sql date
+     * @param dateString string
+     * @returns age
+     */
     const getAge = (dateString: string) => {
         var today = new Date();
         var birthDate = new Date(dateString);
@@ -18,9 +24,134 @@ export = () => {
         return age;
     }
 
+    /**
+     * Function to set null when there is no information available
+     * @param obj 
+     * @param val 
+     * @returns 
+     */
     const setNull = (obj: any, val: any) => {
         Object.keys(obj).forEach(k => obj[k] = val);
         return obj
+    }
+
+    /**
+     * Fetch Image Quality of a patient visit and filter the best image quality
+     * @param patient_id string
+     * @param visit_id string
+     * @returns string
+     */
+
+    const getImageQuality = (patient_id: string, visit_id: string) => {
+        return new Promise((resolve) => {
+            let efficient = '';
+            try {
+                ImageEntity.find({ where: { patient_id, visit_id } }).then(resp => {
+                    if (resp.length) {
+                        let optimal = resp.filter(image => image.efficient === "optimal");
+                        let acceptable = resp.filter(image => image.efficient === "acceptable");
+                        let poor = resp.filter(image => image.efficient === "poor");
+                        if (optimal.length) {
+                            efficient = 'optimal'
+                        } else if (acceptable.length) {
+                            efficient = 'acceptable'
+                        } else if (poor.length) {
+                            efficient = 'poor'
+                        }
+                        resolve(efficient)
+                    } else {
+                        resolve(efficient)
+                    }
+                })
+            } catch (err) {
+                resolve(efficient)
+            }
+        })
+    }
+
+    /**
+     * Function to set excel column
+     * @description All json are processed in sequence
+     * @param responses array
+     * @returns array of json
+     */
+    const getAllInfo = (responses: any) => {
+        return new Promise(resolve => {
+            const newData: any = [];
+            responses.forEach(async (response: any, index: number) => {
+                let imageQuality = await getImageQuality(response.patient_uuid, response.visit_uuid);
+                let data: any = {
+                    patinet_uuid: response.patient_uuid,
+                    gender: response.gender,
+                    age: response.age,
+                    adultInitialEncounterDate: response.nurse.adultinitial_date,
+                    "Eye Camp Ophthalmologist name": response.eyecampreview.eyecamp,
+                    Doctor1ID: response.review1.creator_uuid,
+                    Doctor2ID: response.review2.creator_uuid,
+                    Doctor3ID: response.review3.creator_uuid,
+                    nurseID: response.nurse.nurse_id
+                }
+                if (Object.keys(response.eyecampreview.review).length) {
+                    data = {
+                        ...data,
+                        ...response.eyecampreview.review,
+                    }
+                } else {
+                    data = {
+                        ...data,
+                        ...setNull(getDiagnosis(0), '')
+                    }
+                } if (Object.keys(response.review1.review).length) {
+                    data = {
+                        ...data,
+                        ...response.review1.review,
+                    }
+                } else {
+                    data = {
+                        ...data,
+                        ...setNull(getDiagnosis(1), '')
+                    }
+                } if (Object.keys(response.review2.review).length) {
+                    data = {
+                        ...data,
+                        ...response.review2.review,
+                    }
+                } else {
+                    data = {
+                        ...data,
+                        ...setNull(getDiagnosis(2), '')
+                    }
+                } if (Object.keys(response.review3.review).length) {
+                    data = {
+                        ...data,
+                        ...response.review3.review,
+                    }
+                } else {
+                    data = {
+                        ...data,
+                        ...setNull(getDiagnosis(3), '')
+                    }
+                } if (Object.keys(response.nurse.review).length) {
+                    data = {
+                        ...data,
+                        ...response.nurse.review,
+                    }
+                } else {
+                    data = {
+                        ...data,
+                        ...setNull(getAdultinitialData(), '')
+                    }
+                }
+                data = {
+                    ...data,
+                    imageQuality
+                }
+                newData.push(data)
+                if (responses.length === index + 1) {
+                    setTimeout(() => {resolve(newData)}, 500);
+                }
+            })
+        })
     }
 
     const getDiagnosis = (value: any) => {
@@ -56,18 +187,18 @@ export = () => {
             // [`cannotBeAssessedLeftEC${value}`]: 0,
             OtherdiagnosisRight: '',
             OtherdiagnosisLeft: '',
-            
+
             // [`cornealAbrasionRightEC${value}`]: 0,
             // [`cornealAbrasionLeftEC${value}`]: 0,
-            
+
             // [`normalEyeExamRightEC${value}`]: 0,
             // [`normalEyeExamLeftEC${value}`]: 0,
-            
+
             // [`posteriorSegmentSuspectedRightEC${value}`]: 0,
             // [`posteriorSegmentSuspectedLeftEC${value}`]: 0,
             // [`pseudophakiaRightEC${value}`]: 0,
             // [`pseudophakiaLeftEC${value}`]: 0,
-            
+
 
 
             [`ReferralEC${value}`]: 0,
@@ -185,7 +316,7 @@ export = () => {
                                     doctorReview['otherComplaintLeft'] = com;
                                 }
                             })
-                            
+
                         }
                         if (typeof complaint.right === 'object' && complaint.right.length) {
                             complaint.right.forEach((com: string) => {
@@ -214,7 +345,7 @@ export = () => {
                                     doctorReview['OtherdiagnosisLeft'] = dia;
                                 }
                             })
-                            
+
                         }
                         if (typeof diagnosis.right === 'object' && diagnosis.right.length) {
                             diagnosis.right.forEach((dia: string) => {
@@ -247,7 +378,7 @@ export = () => {
                             let righteye = key.filter(ab => ab.toLowerCase().match('right') && p1.test(ab.toLowerCase()));
                             if (righteye.length) {
                                 doctorReview[righteye[0]] = 1;
-                            } 
+                            }
                         }
                     }
                     if (referral) {
@@ -360,6 +491,7 @@ export = () => {
         try {
             mysql.query(`select e.patient_id, 
             JSON_ARRAYAGG(pe.uuid) as person_uuid,
+            JSON_ARRAYAGG(v.uuid) as visit_uuid,
             JSON_ARRAYAGG(pe.gender) as gender,
             JSON_ARRAYAGG(pe.birthdate) as dob,
             JSON_ARRAYAGG(e.visit_id) as visits,
@@ -391,10 +523,11 @@ export = () => {
                 if (results.length) {
                     let datas: any = [];
                     for (let i = 0; i < results.length; i++) {
-                        let { patient_id, person_uuid, gender, dob, visits, encounters_type_id, encounters, encounter_date, concepts, obs, uuid } = results[i];
+                        let { patient_id, person_uuid, visit_uuid, gender, dob, visits, encounters_type_id, encounters, encounter_date, concepts, obs, uuid } = results[i];
                         try {
                             visits = JSON.parse(visits);
-                            encounters_type_id = JSON.parse(encounters_type_id);
+                            visit_uuid = JSON.parse(visit_uuid),
+                                encounters_type_id = JSON.parse(encounters_type_id);
                             encounters = JSON.parse(encounters);
                             encounter_date = JSON.parse(encounter_date);
                             concepts = JSON.parse(concepts);
@@ -435,6 +568,7 @@ export = () => {
                                             age: getAge(dob[j])
                                         },
                                         visits: {
+                                            visit_uuid: visit_uuid[j],
                                             visit_id: visits[j],
                                             encounters: [{
                                                 encounters_type_id: encounters_type_id[j],
@@ -456,6 +590,7 @@ export = () => {
                         let visit: any = [];
                         datas.forEach((data: any, dataIndex: number) => {
                             let reviews = {
+                                visit_uuid: data.visits.visit_uuid,
                                 patient_uuid: data.person.uuid,
                                 gender: data.person.gender,
                                 age: data.person.age,
@@ -515,80 +650,10 @@ export = () => {
                                 resolve(visit);
                             }
                         })
-                    }).then((responses: any) => {
-                        const newData: any = [];
-                        responses.forEach((response: any) => {
-                            let data = {
-                                patinet_uuid: response.patient_uuid,
-                                gender: response.gender,
-                                age: response.age,
-                                adultInitialEncounterDate: response.nurse.adultinitial_date,
-                                "Eye Camp Ophthalmologist name": response.eyecampreview.eyecamp,
-                                Doctor1ID: response.review1.creator_uuid,
-                                Doctor2ID: response.review2.creator_uuid,
-                                Doctor3ID: response.review3.creator_uuid,
-                                nurseID: response.nurse.nurse_id
-                            }
-                            if (Object.keys(response.eyecampreview.review).length) {
-                                data = {
-                                    ...data,
-                                    ...response.eyecampreview.review,
-                                }
-                            } else {
-                                data = {
-                                    ...data,
-                                    ...setNull(getDiagnosis(0), '')
-                                }
-
-                            } if (Object.keys(response.review1.review).length) {
-                                data = {
-                                    ...data,
-                                    ...response.review1.review,
-                                }
-                            } else {
-                                data = {
-                                    ...data,
-                                    ...setNull(getDiagnosis(1), '')
-                                }
-
-                            } if (Object.keys(response.review2.review).length) {
-                                data = {
-                                    ...data,
-                                    ...response.review2.review,
-                                }
-                            } else {
-                                data = {
-                                    ...data,
-                                    ...setNull(getDiagnosis(2), '')
-                                }
-
-                            } if (Object.keys(response.review3.review).length) {
-                                data = {
-                                    ...data,
-                                    ...response.review3.review,
-                                }
-                            } else {
-                                data = {
-                                    ...data,
-                                    ...setNull(getDiagnosis(3), '')
-                                }
-
-                            } if (Object.keys(response.nurse.review).length) {
-                                data = {
-                                    ...data,
-                                    ...response.nurse.review,
-                                }
-                            } else {
-                                data = {
-                                    ...data,
-                                    ...setNull(getAdultinitialData(), '')
-                                }
-
-                            }
-                            newData.push(data);
-                        })
+                    }).then(async (responses: any) => {
+                        let newData: any = await getAllInfo(responses);
                         writeExcel(newData, 'review').then((response: any) => {
-                            res.status(200).json({ total: datas.length, filepath: `${process.env.SERVER_DOMAIN}:${process.env.PORT}/${response.filepath}` })
+                            res.status(200).json({ total: newData.length, filepath: `${process.env.SERVER_DOMAIN}:${process.env.PORT}/${response.filepath}` })
                         })
                     })
                 } else {
