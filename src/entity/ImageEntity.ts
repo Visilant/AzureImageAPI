@@ -41,6 +41,12 @@ export class ImageEntity extends BaseEntity {
     visual_acuity: string = '';
 
     @Column({ nullable: true })
+    fam_history: string = '';
+
+    @Column({ nullable: true })
+    pat_history: string = '';
+
+    @Column({ nullable: true })
     pinhole_acuity: string = '';
 
     @Column({ nullable: true })

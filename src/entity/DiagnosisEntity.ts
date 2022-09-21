@@ -1,4 +1,4 @@
-import { BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, JoinColumn, Entity, ManyToMany, OneToMany } from "typeorm";
+import { BaseEntity, PrimaryGeneratedColumn, Column, CreateDateColumn, Entity, OneToMany } from "typeorm";
 import { ImageEntity } from "./ImageEntity";
 
 @Entity('diagnosis')
@@ -9,6 +9,9 @@ export class DiagnosisEntity extends BaseEntity {
 
     @Column()
     diagnosis: string = '';
+
+    @Column()
+    additional_pathology: string = '';
 
     @Column()
     created_by: string = '';
