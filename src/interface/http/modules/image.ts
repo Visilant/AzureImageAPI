@@ -1,6 +1,6 @@
 import { ImageEntity } from './../../../entity/ImageEntity';
 import { Router } from 'express';
-import { azureBlob } from '../../../infra/Multer';
+import { azureBlob, azureBlobMultiple } from '../../../infra/Multer';
 import fs from 'fs';
 import auth from '../middleware/auth';
 import { CustomQuery } from '../../../infra/customQuery';
@@ -42,6 +42,23 @@ export = () => {
             try {
                 let image = await ImageEntity.save(data);
                 fs.unlinkSync(storeImage.path);
+                res.status(200).json({ message: 'Created', image })
+            } catch (err) {
+                res.status(400).json({ message: 'Failed', error: err })
+            }
+        } else {
+            res.status(400).json({ message: 'Something failed', error: storeImage })
+        }
+    })
+
+    /**
+     * Upload maximum 100 photos at one call
+     */
+    router.post('/multiple', async (req, res) => {
+        let storeImage: any = await azureBlobMultiple(req, res);
+        if ( storeImage.length) {
+            try {
+                let image = await ImageEntity.save(storeImage);
                 res.status(200).json({ message: 'Created', image })
             } catch (err) {
                 res.status(400).json({ message: 'Failed', error: err })
