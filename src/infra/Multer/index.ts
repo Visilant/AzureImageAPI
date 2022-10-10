@@ -15,7 +15,7 @@ const storage = multer.diskStorage({
 })
 
 const upload = multer({ storage: storage }).single('file');
-const upload_multiple = multer({storage: storage}).array('file', 100);
+const upload_multiple = multer({ storage: storage }).array('file', 100);
 
 export const azureBlob = async (req: Request, res: Response) => {
     return new Promise((resolve, reject) => {
@@ -26,7 +26,7 @@ export const azureBlob = async (req: Request, res: Response) => {
                 let { file, body } = req;
                 if (file) {
                     await uploadImage(`${body.patientId.trim()}/${body.visitId.trim()}/${file.originalname}`, file.path)
-                    resolve({ file: `${body.patientId.trim()}/${body.visitId.trim()}/${file.originalname}`, path: file.path,  body });
+                    resolve({ file: `${body.patientId.trim()}/${body.visitId.trim()}/${file.originalname}`, path: file.path, body });
                 }
             }
         })
@@ -40,18 +40,23 @@ export const azureBlobMultiple = async (req: Request, res: Response) => {
                 reject(err)
             } else {
                 let files: any = req.files;
-                let body: any = req.body;
                 let response: any = [];
+                let { visitId = [], patientId = [], creatorId = [], visual_acuity = [], pinhole_acuity = [], type = [], age = [], sex = [], complaints = [] } = req.body;
                 if (files.length) {
-                    files.forEach(async (file: any) => {
+                    files.forEach(async (file: any, index: number) => {
                         response.push({
-                            ...body,
-                            visit_id: body.visitId.trim(),
-                            patient_id: body.patientId.trim(),
-                            image_path: `https://${process.env.AZURE_CONTAINER}.blob.core.windows.net/${process.env.CONTAINER_NAME}/${body.patientId.trim()}/${body.visitId.trim()}/${file.originalname}`,
-                            created_by: body.creatorId.trim()
+                            visit_id: visitId[index].trim(),
+                            patient_id: patientId[index].trim(),
+                            image_path: `https://${process.env.AZURE_CONTAINER}.blob.core.windows.net/${process.env.CONTAINER_NAME}/${patientId[index].trim()}/${visitId[index].trim()}/${file.originalname}`,
+                            created_by: creatorId[index].trim(),
+                            visual_acuity: visual_acuity[index] ? visual_acuity[index] : '',
+                            pinhole_acuity: pinhole_acuity[index] ? pinhole_acuity[index] : '',
+                            type: type[index] ? type[index] : '',
+                            age: age[index] ? age[index] : '',
+                            sex: sex[index] ? sex[index] : '',
+                            complaints: complaints[index] ? complaints[index] : ''
                         })
-                        await uploadImage(`${body.patientId.trim()}/${body.visitId.trim()}/${file.originalname}`, file.path);
+                        await uploadImage(`${patientId[index].trim()}/${visitId[index].trim()}/${file.originalname}`, file.path);
                         fs.unlinkSync(file.path);
                     })
                     resolve(response);
