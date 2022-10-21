@@ -41,7 +41,7 @@ export const azureBlobMultiple = async (req: Request, res: Response) => {
             } else {
                 let files: any = req.files;
                 let response: any = [];
-                let { visitId = [], patientId = [], creatorId = [], visual_acuity = [], pinhole_acuity = [], type = [], age = [], sex = [], complaints = [] } = req.body;
+                let { visitId = [], patientId = [], creatorId = [], visual_acuity = [], pinhole_acuity = [], type = [], age = [], sex = [], complaints = [], fam_history = [], pat_history = [], efficient = [] } = req.body;
                 if (files.length) {
                     files.forEach(async (file: any, index: number) => {
                         response.push({
@@ -54,7 +54,10 @@ export const azureBlobMultiple = async (req: Request, res: Response) => {
                             type: type[index] ? type[index] : '',
                             age: age[index] ? age[index] : '',
                             sex: sex[index] ? sex[index] : '',
-                            complaints: complaints[index] ? complaints[index] : ''
+                            complaints: complaints[index] ? complaints[index] : '',
+                            pat_history: pat_history[index] ? pat_history[index] : '',
+                            fam_history: fam_history[index] ? fam_history[index] : '',
+                            efficient: efficient[index] ? efficient[index] : ''
                         })
                         await uploadImage(`${patientId[index].trim()}/${visitId[index].trim()}/${file.originalname}`, file.path);
                         fs.unlinkSync(file.path);
