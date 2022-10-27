@@ -12,6 +12,11 @@ export enum Quality {
     ACCEPTABLE = 'acceptable',
     OPTIMAL = 'optimal'
 }
+
+export enum Diagnosable {
+    YES = "yes",
+    NO = "no"
+}
 @Entity('image')
 export class ImageEntity extends BaseEntity {
 
@@ -69,5 +74,11 @@ export class ImageEntity extends BaseEntity {
 
     @CreateDateColumn()
     created_at: string = '';
+
+    @Column({ nullable: true })
+    diagnosable: Diagnosable = Diagnosable.NO;
+
+    @Column({ type: 'json', nullable: true })
+    quality_params: Object = {};
 
 }
