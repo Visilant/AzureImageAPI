@@ -37,12 +37,18 @@ export = () => {
                 visit_id: visitId.trim(),
                 patient_id: patientId.trim(),
                 image_path: `https://${process.env.AZURE_CONTAINER}.blob.core.windows.net/${process.env.CONTAINER_NAME}/${storeImage.file}`,
-                created_by: creatorId.trim()
+                created_by: creatorId.trim(),
+                image_name: storeImage.fileName
             }
             try {
-                let image = await ImageEntity.save(data);
+                let imageExists = await ImageEntity.find({ where: { image_name: data.image_name } })
+                if (imageExists.length) {
+                    res.status(200).json({ message: 'Image Exist Already', imageExists })
+                } else {
+                    let image = await ImageEntity.save(data);
+                    res.status(200).json({ message: 'Created', image })
+                }
                 fs.unlinkSync(storeImage.path);
-                res.status(200).json({ message: 'Created', image })
             } catch (err) {
                 res.status(400).json({ message: 'Failed', error: err })
             }
@@ -56,10 +62,19 @@ export = () => {
      */
     router.post('/multiple', async (req, res) => {
         let storeImage: any = await azureBlobMultiple(req, res);
-        if ( storeImage.length) {
+        if (storeImage.length) {
             try {
-                let image = await ImageEntity.save(storeImage);
-                res.status(200).json({ message: 'Created', image })
+                let images: any = [];
+                storeImage.forEach(async (image: any, index: number) => {
+                    let imageExists = await ImageEntity.find({ where: { image_name: image.image_name } })
+                    if (!imageExists.length) {
+                        await ImageEntity.save(image);
+                        images.push(image);
+                    }
+                    if (index + 1 === storeImage.length) {
+                        res.status(200).json({ message: 'Created', images })
+                    }
+                })
             } catch (err) {
                 res.status(400).json({ message: 'Failed', error: err })
             }

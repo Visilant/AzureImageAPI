@@ -81,4 +81,7 @@ export class ImageEntity extends BaseEntity {
     @Column({ type: 'json', nullable: true })
     quality_params: Object = {};
 
+    @Column({ nullable: true })
+    image_name: string = '';
+
 }

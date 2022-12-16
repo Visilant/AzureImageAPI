@@ -26,7 +26,7 @@ export const azureBlob = async (req: Request, res: Response) => {
                 let { file, body } = req;
                 if (file) {
                     await uploadImage(`${body.patientId.trim()}/${body.visitId.trim()}/${file.originalname}`, file.path)
-                    resolve({ file: `${body.patientId.trim()}/${body.visitId.trim()}/${file.originalname}`, path: file.path, body });
+                    resolve({ file: `${body.patientId.trim()}/${body.visitId.trim()}/${file.originalname}`, path: file.path, body, fileName: file.originalname });
                 }
             }
         })
@@ -57,7 +57,8 @@ export const azureBlobMultiple = async (req: Request, res: Response) => {
                             complaints: complaints[index] ? complaints[index] : '',
                             pat_history: pat_history[index] ? pat_history[index] : '',
                             fam_history: fam_history[index] ? fam_history[index] : '',
-                            efficient: efficient[index] ? efficient[index] : ''
+                            efficient: efficient[index] ? efficient[index] : '',
+                            image_name: file.originalname
                         })
                         await uploadImage(`${patientId[index].trim()}/${visitId[index].trim()}/${file.originalname}`, file.path);
                         fs.unlinkSync(file.path);
