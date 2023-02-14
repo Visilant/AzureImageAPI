@@ -36,28 +36,48 @@ export = () => {
     }
 
     /**
-     * Fetch Image Quality of a patient visit and filter the best image quality
-     * @param patient_id string
-     * @param visit_id string
+     * Filter the best image quality
+     * @param data array
      * @returns string
      */
+    const getImageQuality = (data = []) => {
+        let efficient = '';
+        if (data.length) {
+            let optimal = data.filter((image: any) => image.efficient === "optimal");
+            let acceptable = data.filter((image: any) => image.efficient === "acceptable");
+            let poor = data.filter((image: any) => image.efficient === "poor");
+            // console.log(optimal, acceptable, poor)
+            if (optimal.length) {
+                efficient = 'optimal'
+            } else if (acceptable.length) {
+                efficient = 'acceptable'
+            } else if (poor.length) {
+                efficient = 'poor'
+            }
+        }
+        return efficient;
+    }
 
-    const getImageQuality = (patient_id: string, visit_id: string) => {
+    /**
+     * Fetch Image Quality of a patient visit
+     * @param patient_id string
+     * @param visit_id string
+     * @returns object
+     */
+
+    const getImage = (patient_id: string, visit_id: string) => {
         return new Promise((resolve) => {
-            let efficient = '';
+            let efficient = {
+                imageQualityLeft: '',
+                imageQualityRight: ''
+            }
             try {
                 ImageEntity.find({ where: { patient_id, visit_id } }).then(resp => {
                     if (resp.length) {
-                        let optimal = resp.filter(image => image.efficient === "optimal");
-                        let acceptable = resp.filter(image => image.efficient === "acceptable");
-                        let poor = resp.filter(image => image.efficient === "poor");
-                        if (optimal.length) {
-                            efficient = 'optimal'
-                        } else if (acceptable.length) {
-                            efficient = 'acceptable'
-                        } else if (poor.length) {
-                            efficient = 'poor'
-                        }
+                        let leftEye: any = resp.filter(image => image.type === 'left')
+                        let righttEye: any = resp.filter(image => image.type === 'right')
+                        efficient.imageQualityLeft = getImageQuality(leftEye)
+                        efficient.imageQualityRight = getImageQuality(righttEye)
                         resolve(efficient)
                     } else {
                         resolve(efficient)
@@ -79,7 +99,7 @@ export = () => {
         return new Promise(resolve => {
             const newData: any = [];
             responses.forEach(async (response: any, index: number) => {
-                let imageQuality = await getImageQuality(response.patient_uuid, response.visit_uuid);
+                let imageQuality: any = await getImage(response.patient_uuid, response.visit_uuid);
                 let data: any = {
                     patinet_uuid: response.patient_uuid,
                     gender: response.gender,
@@ -144,7 +164,7 @@ export = () => {
                 }
                 data = {
                     ...data,
-                    imageQuality
+                    ...imageQuality
                 }
                 newData.push(data)
                 if (responses.length === index + 1) {
