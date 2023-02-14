@@ -86,10 +86,10 @@ export = () => {
                     age: response.age,
                     adultInitialEncounterDate: response.nurse.adultinitial_date,
                     "Eye Camp Ophthalmologist name": response.eyecampreview.eyecamp,
-                    Doctor1ID: response.review1.creator_uuid,
-                    Doctor2ID: response.review2.creator_uuid,
-                    Doctor3ID: response.review3.creator_uuid,
-                    nurseID: response.nurse.nurse_id
+                    RO1_id: response.review1.creator_uuid,
+                    RO2_id: response.review2.creator_uuid,
+                    RO3_id: response.review3.creator_uuid,
+                    CHW_id: response.nurse.nurse_id
                 }
                 if (Object.keys(response.eyecampreview.review).length) {
                     data = {
@@ -148,7 +148,7 @@ export = () => {
                 }
                 newData.push(data)
                 if (responses.length === index + 1) {
-                    setTimeout(() => {resolve(newData)}, 500);
+                    setTimeout(() => { resolve(newData) }, 500);
                 }
             })
         })
@@ -156,75 +156,75 @@ export = () => {
 
     const getDiagnosis = (value: any) => {
         let doctor = {
-            [`matureCataractRightEC${value}`]: 0,
-            [`matureCataractLeftEC${value}`]: 0,
-            [`immatureCataractRightEC${value}`]: 0,
-            [`immatureCataractLeftEC${value}`]: 0,
-            [`clearCrystallineLensRightEC${value}`]: 0,
-            [`clearCrystallineLensLeftEC${value}`]: 0,
-            [`PCIOLRightEC${value}`]: 0,
-            [`PCIOLLeftEC${value}`]: 0,
-            [`AphakiaRightEC${value}`]: 0,
-            [`AphakiaLeftEC${value}`]: 0,
-            [`refractiveErrorPresbyopiaRightEC${value}`]: 0,
-            [`refractiveErrorPresbyopiaLeftEC${value}`]: 0,
-            [`pterygiumRightEC${value}`]: 0,
-            [`pterygiumLeftEC${value}`]: 0,
-            [`inactiveCornealOpacityRightEC${value}`]: 0,
-            [`inactiveCornealOpacityLeftEC${value}`]: 0,
-            [`activeCornealInfectionRightEC${value}`]: 0,
-            [`activeCornealInfectionLeftEC${value}`]: 0,
+            [`matureCataractRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`matureCataractLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`immatureCataractRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`immatureCataractLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`clearCrystallineLensRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`clearCrystallineLensLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`PCIOLRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`PCIOLLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`AphakiaRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`AphakiaLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`refractiveErrorPresbyopiaRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`refractiveErrorPresbyopiaLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`pterygiumRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`pterygiumLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`inactiveCornealOpacityRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`inactiveCornealOpacityLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`activeCornealInfectionRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`activeCornealInfectionLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
 
-            // [`conjunctivitisRightEC${value}`]: 0,
-            // [`conjunctivitisLeftEC${value}`]: 0,
-            // [`subconjunctivalHemorrhageRightEC${value}`]: 0,
-            // [`subconjunctivalHemorrhageLeftEC${value}`]: 0,
-            // [`presbyopiaRightEC${value}`]: 0,
-            // [`presbyopiaLeftEC${value}`]: 0,
-            // [`posteriorSegmentScreeningRightEC${value}`]: 0,
-            // [`posteriorSegmentScreeningLeftEC${value}`]: 0,
-            // [`cannotBeAssessedRightEC${value}`]: 0,
-            // [`cannotBeAssessedLeftEC${value}`]: 0,
+            // [`conjunctivitisRight${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`conjunctivitisLeft${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`subconjunctivalHemorrhageRight${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`subconjunctivalHemorrhageLeft${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`presbyopiaRight${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`presbyopiaLeft${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`posteriorSegmentScreeningRight${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`posteriorSegmentScreeningLeft${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`cannotBeAssessedRight${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`cannotBeAssessedLeft${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
             OtherdiagnosisRight: '',
             OtherdiagnosisLeft: '',
 
-            // [`cornealAbrasionRightEC${value}`]: 0,
-            // [`cornealAbrasionLeftEC${value}`]: 0,
+            // [`cornealAbrasionRight${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`cornealAbrasionLeft${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
 
-            // [`normalEyeExamRightEC${value}`]: 0,
-            // [`normalEyeExamLeftEC${value}`]: 0,
+            // [`normalEyeExamRight${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`normalEyeExamLeft${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
 
-            // [`posteriorSegmentSuspectedRightEC${value}`]: 0,
-            // [`posteriorSegmentSuspectedLeftEC${value}`]: 0,
-            // [`pseudophakiaRightEC${value}`]: 0,
-            // [`pseudophakiaLeftEC${value}`]: 0,
+            // [`posteriorSegmentSuspectedRight${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`posteriorSegmentSuspectedLeft${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`pseudophakiaRight${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            // [`pseudophakiaLeft${ value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
 
 
 
-            [`ReferralEC${value}`]: 0,
-            [`ReferralLocationEC${value}`]: '',
-            [`ReferralTimingEC${value}`]: ''
+            [`Referral${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+            [`ReferralLocation${value === 0 ? `EC${value}` : `RO${value}`}`]: '',
+            [`ReferralTiming${value === 0 ? `EC${value}` : `RO${value}`}`]: ''
         }
         if (value === 0) {
             doctor = {
                 ...doctor,
-                [`visualAcuityRightEC${value}`]: '',
-                [`visualAcuityLeftEC${value}`]: '',
-                [`pinholeRightEC${value}`]: '',
-                [`pinholeLeftEC${value}`]: '',
+                [`visualAcuityRight${value === 0 ? `EC${value}` : `RO${value}`}`]: '',
+                [`visualAcuityLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: '',
+                [`pinholeRight${value === 0 ? `EC${value}` : `RO${value}`}`]: '',
+                [`pinholeLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: '',
 
-                [`blurryVisionUpCloseRightEC${value}`]: 0,
-                [`blurryVisionUpCloseLeftEC${value}`]: 0,
-                [`blurryVisionFarRightEC${value}`]: 0,
-                [`blurryVisionFarLeftEC${value}`]: 0,
-                [`rednessRightEC${value}`]: 0,
-                [`rednessLeftEC${value}`]: 0,
-                [`eyePainOrIrritationRightEC${value}`]: 0,
-                [`eyePainOrIrritationLeftEC${value}`]: 0,
-                [`headacheRightEC${value}`]: 0,
-                [`headacheLeftEC${value}`]: 0,
-                [`eyeTraumaRightEC${value}`]: 0,
-                [`eyeTraumaLeftEC${value}`]: 0,
+                [`blurryVisionUpCloseRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+                [`blurryVisionUpCloseLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+                [`blurryVisionFarRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+                [`blurryVisionFarLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+                [`rednessRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+                [`rednessLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+                [`eyePainOrIrritationRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+                [`eyePainOrIrritationLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+                [`headacheRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+                [`headacheLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+                [`eyeTraumaRight${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
+                [`eyeTraumaLeft${value === 0 ? `EC${value}` : `RO${value}`}`]: 0,
                 otherComplaintRight: '',
                 otherComplaintLeft: '',
             }
@@ -235,27 +235,27 @@ export = () => {
 
     const getAdultinitialData = () => {
         let nurse = {
-            blurryVisionCloseRightNurse: 0,
-            blurryVisionCloseLeftNurse: 0,
-            blurryVisionFarRightNurse: 0,
-            blurryVisionFarLeftNurse: 0,
-            rednessRightNurse: 0,
-            rednessLeftNurse: 0,
-            eyePainRightNurse: 0,
-            eyePainLeftNurse: 0,
-            headacheRightNurse: 0,
-            headacheLeftNurse: 0,
-            eyeTraumaRightNurse: 0,
-            eyeTraumaLeftNurse: 0,
-            // pcIOLRightNurse: 0,
-            // pcIOLLeftNurse: 0,
+            blurryVisionCloseRightCHW: 0,
+            blurryVisionCloseLeftCHW: 0,
+            blurryVisionFarRightCHW: 0,
+            blurryVisionFarLeftCHW: 0,
+            rednessRightCHW: 0,
+            rednessLeftCHW: 0,
+            eyePainRightCHW: 0,
+            eyePainLeftCHW: 0,
+            headacheRightCHW: 0,
+            headacheLeftCHW: 0,
+            eyeTraumaRightCHW: 0,
+            eyeTraumaLeftCHW: 0,
+            // pcIOLRightCHW: 0,
+            // pcIOLLeftCHW: 0,
             otherComplaintRight: '',
             otherComplaintLeft: '',
-            volunteerVARight: '',
-            volunteerVALeft: '',
-            volunteerPinholeRight: '',
-            volunteerPinholeLeft: '',
-            volunteerReferral: 0
+            VARightCHW: '',
+            VALeftCHW: '',
+            PinholeRightCHW: '',
+            PinholeLeftCHW: '',
+            ReferralCHW: 0
         }
         return nurse;
     }
@@ -265,11 +265,11 @@ export = () => {
         return new Promise((resolve) => {
             let doctorReview = getDiagnosis(type), eyecamp = '';
             encounter.obs.forEach((ob: any) => {
-                if ([165204, 165207, 165205, 165206, 165227, 165228].includes(ob.concept_id)) {
+                if ([165185, 165186, 165226, 165204, 165207, 165205, 165206, 165225, 165227, 165228, 165229, 165230].includes(ob.concept_id)) {
                     var firstWord = ob.obs_value.split(' ')[0].toLowerCase() + (ob.obs_value.split(' ')[1]?.toLowerCase() || '');
                     let key = Object.keys(doctorReview);
                     let p1 = new RegExp(`^${firstWord}`);
-                    if ([165204, 165205, 165227, 165228].includes(ob.concept_id)) {
+                    if ([165185, 165204, 165205, 165226, 165227, 165228].includes(ob.concept_id)) {
                         let lefteye = key.filter(ab => ab.toLowerCase().match('left') && p1.test(ab.toLowerCase()));
                         if (lefteye.length) {
                             doctorReview[lefteye[0]] = 1;
@@ -284,24 +284,24 @@ export = () => {
                             doctorReview['OtherdiagnosisRight'] = ob.obs_value;
                         }
                     }
-                } else if ([165196, 165197].includes(ob.concept_id)) {
+                } else if ([165183, 165196, 165197].includes(ob.concept_id)) {
                     if (ob.obs_value.toLowerCase() !== 'no') {
-                        doctorReview[`ReferralEC${type}`] = 1
+                        doctorReview[`Referral${type === 0 ? `EC${type}` : `DC${type}`}`] = 1
                         const location = ob.obs_value.split('to ')[1];
-                        doctorReview[`ReferralLocationEC${type}`] = location;
+                        doctorReview[`ReferralLocation${type === 0 ? `EC${type}` : `DC${type}`}`] = location;
                     }
-                } else if ([165198, 165199].includes(ob.concept_id)) {
+                } else if ([165184, 165198, 165199].includes(ob.concept_id)) {
                     const time = ob.obs_value.split('in ')[1];
-                    doctorReview[`ReferralTimingEC${type}`] = time;
+                    doctorReview[`ReferralTiming${type === 0 ? `EC${type}` : `DC${type}`}`] = time;
                 } else if (ob.concept_id === 165214) {
                     let { acuity, pinhole, complaint, diagnosis, lens, referral, ophthalmologist } = JSON.parse(ob.obs_value)
                     if (acuity) {
-                        doctorReview[`visualAcuityLeftEC${type}`] = acuity.left;
-                        doctorReview[`visualAcuityRightEC${type}`] = acuity.right;
+                        doctorReview[`visualAcuityLeft${type === 0 ? `EC${type}` : `DC${type}`}`] = acuity.left;
+                        doctorReview[`visualAcuityRight${type === 0 ? `EC${type}` : `DC${type}`}`] = acuity.right;
                     }
                     if (pinhole) {
-                        doctorReview[`pinholeLeftEC${type}`] = pinhole.left
-                        doctorReview[`pinholeRightEC${type}`] = pinhole.right
+                        doctorReview[`pinholeLeft${type === 0 ? `EC${type}` : `DC${type}`}`] = pinhole.left
+                        doctorReview[`pinholeRight${type === 0 ? `EC${type}` : `DC${type}`}`] = pinhole.right
                     }
                     if (complaint) {
                         if (typeof complaint.left === 'object' && complaint.left.length) {
@@ -309,6 +309,7 @@ export = () => {
                                 var firstWord = com.split(' ')[0].toLowerCase() + (com.split(' ')[1]?.toLowerCase() || '') + (com.split(' ')[2]?.toLowerCase() || '');
                                 let key = Object.keys(doctorReview);
                                 let p1 = new RegExp(`^${firstWord}`);
+                                // console.log(firstWord, p1)
                                 let lefteye = key.filter(ab => ab.toLowerCase().match('left') && p1.test(ab.toLowerCase()));
                                 if (lefteye.length) {
                                     doctorReview[lefteye[0]] = 1;
@@ -383,12 +384,12 @@ export = () => {
                     }
                     if (referral) {
                         if (referral.value !== '' && referral.value.toLowerCase() !== 'no') {
-                            doctorReview[`ReferralEC${type}`] = 1
+                            doctorReview[`Referral${type === 0 ? `EC${type}` : `DC${type}`}`] = 1
                             const location = referral.value.split('to ')[1];
-                            doctorReview[`ReferralLocationEC${type}`] = location;
+                            doctorReview[`ReferralLocation${type === 0 ? `EC${type}` : `DC${type}`}`] = location;
                             if (referral.time !== '') {
                                 const time = referral.time;
-                                doctorReview[`ReferralTimingEC${type}`] = time;
+                                doctorReview[`ReferralTiming${type === 0 ? `EC${type}` : `DC${type}`}`] = time;
                             }
                         }
                     } if (ophthalmologist) {
@@ -424,16 +425,16 @@ export = () => {
                         }
                     }
                 } else if (ob.concept_id === 165189) {
-                    nurseReview['volunteerVARight'] = ob.obs_value;
+                    nurseReview['VARightCHW'] = ob.obs_value;
                 } else if (ob.concept_id === 165190) {
-                    nurseReview['volunteerVALeft'] = ob.obs_value;
+                    nurseReview['VALeftCHW'] = ob.obs_value;
                 } else if (ob.concept_id === 165191) {
-                    nurseReview['volunteerPinholeRight'] = ob.obs_value;
+                    nurseReview['PinholeRightCHW'] = ob.obs_value;
                 } else if (ob.concept_id === 165192) {
-                    nurseReview['volunteerPinholeLeft'] = ob.obs_value;
+                    nurseReview['PinholeLeftCHW'] = ob.obs_value;
                 } else if (ob.concept_id === 165193) {
                     if (ob.obs_value.toLowerCase() !== 'no.' && ob.obs_value.toLowerCase() !== 'no') {
-                        nurseReview['volunteerReferral'] = 1;
+                        nurseReview['ReferralCHW'] = 1;
                     }
                 }
             })
